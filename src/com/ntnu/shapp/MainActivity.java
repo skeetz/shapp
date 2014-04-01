@@ -2,17 +2,18 @@ package com.ntnu.shapp;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
-    @Override
+
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -39,13 +40,35 @@ public class MainActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id){
+        case R.id.menu_user:setUserView();
+        case R.id.menu_shopping_list:setShoppingView();
+        case R.id.menu_goals:setGoalsView();
         }
+        
         return super.onOptionsItemSelected(item);
     }
 
-    /**
+    private void setGoalsView() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private void setShoppingView() {
+		Intent userIntent = new Intent(this, ShoppingActivity.class);
+		startActivity(userIntent);
+		
+	}
+
+
+	private void setUserView() {
+		Intent userIntent = new Intent(this, UserActivity.class);
+		startActivity(userIntent);
+		
+	}
+
+	/**
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
@@ -58,8 +81,6 @@ public class MainActivity extends Activity {
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             
-            TextView tekst = (TextView) rootView.findViewById(R.id.test);
-            tekst.setText("ENDRET");
             
             return rootView;
         }

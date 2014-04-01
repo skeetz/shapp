@@ -22,6 +22,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.ntnu.shapp.UserActivity"
+            android:label="@string/title_activity_user" >
+        </activity>
+        <activity
+            android:name="com.ntnu.shapp.ShoppingActivity"
+            android:label="@string/title_activity_shopping" >
+        </activity>
     </application>
 
 </manifest>
