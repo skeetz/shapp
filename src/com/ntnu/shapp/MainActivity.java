@@ -1,5 +1,6 @@
 package com.ntnu.shapp;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
@@ -23,6 +24,9 @@ public class MainActivity extends Activity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+        DB db = new DB(this);
+        db.addUser("Anders");
+        
     }
 
 
@@ -33,6 +37,11 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+    
+    public boolean onPrepareOptionsMenu(Menu menu){
+		return true;
+    	
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -41,32 +50,19 @@ public class MainActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch (id){
-        case R.id.menu_user:setUserView();
-        case R.id.menu_shopping_list:setShoppingView();
-        case R.id.menu_goals:setGoalsView();
+        case R.id.menu_user:
+        	startActivity(new Intent(this, UserActivity.class));
+        	return true;
+        case R.id.menu_shopping_list:
+        	startActivity(new Intent(this, ShoppingActivity.class));
+        	return true;
+        case R.id.menu_goals:
+        	startActivity(new Intent(this, GoalActivity.class));
+        	return true;
         }
         
         return super.onOptionsItemSelected(item);
     }
-
-    private void setGoalsView() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	private void setShoppingView() {
-		Intent userIntent = new Intent(this, ShoppingActivity.class);
-		startActivity(userIntent);
-		
-	}
-
-
-	private void setUserView() {
-		Intent userIntent = new Intent(this, UserActivity.class);
-		startActivity(userIntent);
-		
-	}
 
 	/**
      * A placeholder fragment containing a simple view.

@@ -9,5 +9,9 @@
     <string name="menu_goals">Goals</string>
     <string name="title_activity_user">UserActivity</string>
     <string name="title_activity_shopping">ShoppingActivity</string>
+    <string name="title_activity_goal">GoalActivity</string>
+    <string name="landing_new_user_button">New user</string>
+    <string name="landing_curret_user_textview">Current user</string>
+    <string name="title_activity_landing">LandingActivity</string>
 
 </resources>
