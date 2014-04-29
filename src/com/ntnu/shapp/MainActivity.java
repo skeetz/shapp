@@ -3,6 +3,7 @@ package com.ntnu.shapp;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,16 +19,20 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
         DB db = new DB(this);
-        db.addUser("Anders");
+        
         
     }
+	
+	public void newShoppingList(View v){
+		Intent intent = new Intent(this, GoalActivity.class);
+		startActivity(intent);
+	}
 
 
     @Override
@@ -49,17 +54,6 @@ public class MainActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        switch (id){
-        case R.id.menu_user:
-        	startActivity(new Intent(this, UserActivity.class));
-        	return true;
-        case R.id.menu_shopping_list:
-        	startActivity(new Intent(this, ShoppingActivity.class));
-        	return true;
-        case R.id.menu_goals:
-        	startActivity(new Intent(this, GoalActivity.class));
-        	return true;
-        }
         
         return super.onOptionsItemSelected(item);
     }

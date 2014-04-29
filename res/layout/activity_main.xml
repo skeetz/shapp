@@ -4,7 +4,45 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.ntnu.shapp.MainActivity"
-    tools:ignore="MergeRootFrame" 
-    
-    />
+    tools:ignore="MergeRootFrame" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+    	android:paddingRight="16dp" >
+    	
+	    	<LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:orientation="vertical"
+	        android:layout_weight="1">
+	         <ListView 
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent">
+	        </ListView>
+      		</LinearLayout>
+	  		<LinearLayout
+       		android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:orientation="vertical"
+	        android:layout_weight="1">
+	        	<Button
+	            android:id="@+id/main_new_shopping_list"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:gravity="center"
+	            android:text="@string/main_new_shopping_list"
+	            android:onClick="newShoppingList" />
+
+	        	<Button
+	            android:id="@+id/main_new_user"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:text="@string/main_new_user" />
+    	</LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>
 
