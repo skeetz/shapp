@@ -1,13 +1,10 @@
 package com.ntnu.shapp;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,7 +14,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -32,6 +28,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,23 +38,37 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class ShoppingActivity extends Activity implements OnClickListener{
+	private ArrayList<Integer> goalValues;
 	private ArrayList<String> productNames;
-	private Button scanBtn;
+	private Button scanBtn, evaluateBtn;
 	private ListView productNamesListView;
 	private ArrayAdapter<String> productNamesAdapter;
+	private HashMap<String, String> eansForProduct;
+	private DB database;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_shopping);
 		
+		Intent intent = getIntent();
+		goalValues = intent.getIntegerArrayListExtra("goalValues");
+		
 		scanBtn = (Button)findViewById(R.id.scan_button);
 		scanBtn.setOnClickListener(this);
+	
+		evaluateBtn = (Button)findViewById(R.id.shopping_complete_button);
+		evaluateBtn.setOnClickListener(this);
 		
+		database = new DB(this);
+		database.deleteInsights();
+		
+		eansForProduct = new HashMap<String, String>();
 		productNames = new ArrayList<String>();
 		productNamesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, productNames);
 		
@@ -72,12 +83,31 @@ public class ShoppingActivity extends Activity implements OnClickListener{
 					long arg3) {
 				final int itemToRemove = item;
 				AlertDialog.Builder dialog = new AlertDialog.Builder(ShoppingActivity.this);
-				dialog.setTitle("Delete?");
-				dialog.setMessage("Do you want to delete " + productNames.get(item));
-				dialog.setNegativeButton("Cancel", null);
-				dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				dialog.setTitle(productNames.get(item));
+				dialog.setMessage("Search the web for more information or delete from shopping list?");
+				dialog.setNegativeButton("Search the web", new DialogInterface.OnClickListener() {
+					
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
+						 Uri uri = Uri.parse("http://www.google.com/search?q=" + productNames.get(itemToRemove));
+						 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+						 startActivity(intent);
+					}
+				});
+				dialog.setNeutralButton("Save insights", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						showInsightDialog(productNames.get(itemToRemove));
+						
+					}
+				});
+				dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if(eansForProduct.containsKey(productNames.get(itemToRemove))){
+							eansForProduct.remove(productNames.get(itemToRemove));							
+						}
 						productNames.remove(itemToRemove);
 						productNamesAdapter.notifyDataSetChanged();
 					}
@@ -85,17 +115,50 @@ public class ShoppingActivity extends Activity implements OnClickListener{
 				dialog.show();
 			}
 		});
-		
+		/*
 		productNames.add("TEST1");
 		productNames.add("TEST2");
 		productNames.add("TEST3");
-		
+		*/
 	}
-
+	
+	
+	private void showInsightDialog(String productName){
+		final String name = productName;
+		AlertDialog.Builder insightDialog = new AlertDialog.Builder(ShoppingActivity.this);
+		insightDialog.setTitle("Add insight for " + productName);
+		final EditText insight = new EditText(this);
+		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+		        LinearLayout.LayoutParams.MATCH_PARENT,
+		        LinearLayout.LayoutParams.MATCH_PARENT);
+		insight.setLayoutParams(lp);
+		insightDialog.setView(insight);
+		insight.setHeight(100);
+		insightDialog.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				database.addInsight(eansForProduct.get(name), insight.getText().toString());
+				
+			}
+		});
+		insightDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				
+			}
+		});
+		
+		insightDialog.show();
+	}
+	
+	//Button listeners
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.scan_button){
-			try {
+			/*try {
 				buildXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><BarcodeLookupResponse><product><ean>5099750442227</ean><name>Thriller</name></product></BarcodeLookupResponse>");
 				productNamesAdapter.notifyDataSetChanged();
 			} catch (ParserConfigurationException e) {
@@ -107,18 +170,24 @@ public class ShoppingActivity extends Activity implements OnClickListener{
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}*/
 			}
-			//IntentIntegrator scanIntegrator = new IntentIntegrator(this);
-			//scanIntegrator.initiateScan();
+			IntentIntegrator scanIntegrator = new IntentIntegrator(this);
+			scanIntegrator.initiateScan();
+		if(v.getId() == R.id.shopping_complete_button){
+			Intent intent = new Intent(this, EvaluationActivity.class);
+			intent.putStringArrayListExtra("productNames", productNames);
+			intent.putIntegerArrayListExtra("goalValues", goalValues);
+			startActivity(intent);
 		}
 		
 	}
-	
+	//Scannerkode
 	public void onActivityResult(int requestCode, int resultCode, Intent intent){
 		IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		if(scanningResult != null){
 			String scanContent = scanningResult.getContents();
-			String scanFormat = scanningResult.getFormatName();
+			//String scanFormat = scanningResult.getFormatName();
 			//contentTxt.setText("CONTENT: " + scanContent);
 			new RequestTask().execute(scanContent);
 		}
@@ -136,39 +205,34 @@ public class ShoppingActivity extends Activity implements OnClickListener{
 				<name>Thriller</name>
 			</product>
 		</BarcodeLookupResponse>
-		 */
-	/*
-	private void parseResult(String results) {
-		if(results.equalsIgnoreCase("<Error>Barcode not found</Error>")){
-			Toast toast = Toast.makeText(getApplicationContext(), "The scanned item was not found in the database", Toast.LENGTH_SHORT);
-			toast.show();
-		}
-		else{
-			int i = results.indexOf("<name>");
-			
-		}
 		
-	}
-	*/
+		<Error>Barcode not found</Error>
+		 */
 
 	public void buildXML(String xml) throws ParserConfigurationException, SAXException, IOException{
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		InputSource in = new InputSource(new StringReader(xml));
 		Document document = builder.parse(in);
-		String productName = document.getElementsByTagName("name").item(0).getTextContent();
-		productNames.add(productName);
-		productNamesAdapter.notifyDataSetChanged();
-		/*
-		 * TODO
-		 * last inn i arraylisten
-		 * sjekk etter <Error>
-		 */
+		if(document.getFirstChild().getTextContent().equals("Barcode not found")){
+			Toast toast = Toast.makeText(this, "The requested barcode was not found", Toast.LENGTH_SHORT);
+			toast.show();
+		}
+		else{
+			String productName = document.getElementsByTagName("name").item(0).getTextContent();
+			String ean = document.getElementsByTagName("ean").item(0).getTextContent();
+			eansForProduct.put(productName, ean);
+			
+			productNames.add(productName);
+			productNamesAdapter.notifyDataSetChanged();
+		}
 	}
 
 	private class RequestTask extends AsyncTask<String, String, String>{
 
-	    protected String getASCIIContentFromEntity(HttpEntity entity) throws IllegalStateException, IOException {
+	    private static final String TAG = "Shapp";
+
+		protected String getASCIIContentFromEntity(HttpEntity entity) throws IllegalStateException, IOException {
 	        InputStream in = entity.getContent();
 	        StringBuffer out = new StringBuffer();
 	        int n = 1;
@@ -208,13 +272,13 @@ public class ShoppingActivity extends Activity implements OnClickListener{
 			try {
 				buildXML(results);
 			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
+				Log.d(TAG, e.getMessage());
 				e.printStackTrace();
 			} catch (SAXException e) {
-				// TODO Auto-generated catch block
+				Log.d(TAG, e.getMessage());
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				Log.d(TAG, e.getMessage());
 				e.printStackTrace();
 			}
 		}

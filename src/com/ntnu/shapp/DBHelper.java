@@ -10,7 +10,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "ShappDB";
 	private static final  int DATABASE_VERSION = 1;
 	//Database creation statement
-	private static final String DATABASE_CREATE = "create table Users ( _id integer primary key, name text not null);";
+	//private static final String DATABASE_CREATE_USERS = "create table Users ( _id integer primary key, name text not null);";
+	private static final String DATABASE_CREATE_PRODUCTS = "create table Products (_id integer primary key, ean text, insight text);";
 	
 	public DBHelper(Context c) {
 		super(c, DATABASE_NAME, null, DATABASE_VERSION);
@@ -19,7 +20,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL(DATABASE_CREATE);
+		//db.execSQL(DATABASE_CREATE_USERS);
+		db.execSQL(DATABASE_CREATE_PRODUCTS);
 	}
 
 	@Override
@@ -27,7 +29,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.w(DBHelper.class.getName(),
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion + ", which will destroy all old data");
-        database.execSQL("DROP TABLE IF EXISTS Users");
+        //database.execSQL("DROP TABLE IF EXISTS Users");
+        database.execSQL("DROP TABLE IF EXISTS Products");
         onCreate(database);
 	}
 

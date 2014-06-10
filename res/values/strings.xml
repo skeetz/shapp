@@ -18,5 +18,7 @@
     <string name="goal_textview_environmentally_friendly">Environmentally friendly?</string>
     <string name="goal_textview_price">Price?</string>
     <string name="goal_button_start_shopping">Start shopping!</string>
+    <string name="title_activity_evaluation">EvaluationActivity</string>
+    <string name="shopping_complete">Evaluate shopping list</string>
 
 </resources>

@@ -21,60 +21,15 @@
             android:gravity="center"
             android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"/>
 
-        
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        
-        <TextView
-            android:id="@+id/goal_textview_healthy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/goal_textview_healthy" />"
+        <include layout="@layout/seekbars"/>
 
-        <SeekBar
-            android:id="@+id/goal_seekbar_healthy"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:progress="50"
-            android:max="100" /> 
-        <TextView
-            android:id="@+id/goal_textview_environmentally_friendly"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/goal_textview_environmentally_friendly" />
-
-        <SeekBar
-            android:id="@+id/goal_seekbar_environmentally_friendly"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:progress="50"
-            android:max="100" />
-        
-        <TextView
-            android:id="@+id/goal_textview_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/goal_textview_price" />
-
-        <SeekBar
-            android:id="@+id/goal_seekbar_price"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:progress="50"
-            android:max="100" />
-        
-    
-        </LinearLayout>
         
         <Button 
             android:id="@+id/goal_button_start_shopping"
             android:text="@string/goal_button_start_shopping"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:onClick="startShopping"/>
+            android:gravity="center"/>
 
     </LinearLayout>
 
