@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -68,8 +69,22 @@ public class ShoppingActivity extends Activity implements OnClickListener{
 		database = new DB(this);
 		database.deleteInsights();
 		
-		eansForProduct = new HashMap<String, String>();
-		productNames = new ArrayList<String>();
+		if(savedInstanceState != null){
+			if(savedInstanceState.containsKey("productNames")){
+				productNames = savedInstanceState.getStringArrayList("productNames");
+			}else{			
+				productNames = new ArrayList<String>();
+			}
+			if(savedInstanceState.containsKey("eansForProduct")){
+				eansForProduct = (HashMap<String, String>) savedInstanceState.getSerializable("eansForProduct");
+			}else{				
+				eansForProduct = new HashMap<String, String>();
+			}
+			
+		}else{
+			productNames = new ArrayList<String>();
+			eansForProduct = new HashMap<String, String>();
+		}
 		productNamesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, productNames);
 		
 		productNamesListView = (ListView)findViewById(R.id.scan_content);
@@ -122,6 +137,35 @@ public class ShoppingActivity extends Activity implements OnClickListener{
 		*/
 	}
 	
+	@Override
+	protected void onPause() {
+		super.onPause();	
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();	
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putStringArrayList("productNames", productNames);
+		if(eansForProduct != null){
+			outState.putSerializable("eansForProduct", eansForProduct);			
+		}
+		super.onSaveInstanceState(outState);
+	}
+	/*
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		productNames = savedInstanceState.getStringArrayList("productNames");
+		super.onRestoreInstanceState(savedInstanceState);
+	}*/
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+	}
 	
 	private void showInsightDialog(String productName){
 		final String name = productName;
@@ -171,9 +215,9 @@ public class ShoppingActivity extends Activity implements OnClickListener{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}*/
-			}
 			IntentIntegrator scanIntegrator = new IntentIntegrator(this);
 			scanIntegrator.initiateScan();
+		}
 		if(v.getId() == R.id.shopping_complete_button){
 			Intent intent = new Intent(this, EvaluationActivity.class);
 			intent.putStringArrayListExtra("productNames", productNames);

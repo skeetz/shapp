@@ -31,7 +31,8 @@
         </activity>
         <activity
             android:name="com.ntnu.shapp.ShoppingActivity"
-            android:label="@string/title_activity_shopping" >
+            android:label="@string/title_activity_shopping"
+            android:configChanges="orientation" >
         </activity>
         <activity
             android:name="com.ntnu.shapp.GoalActivity"

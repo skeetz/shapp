@@ -20,7 +20,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         DB db = new DB(this);
-        
+        if(getIntent().getBooleanExtra("EXIT", false)){
+        	finish();
+        }
         
     }
 	
